@@ -2,6 +2,7 @@
 #include "core/backend/FiberPool.hpp"
 #include "core/backend/ScriptMgr.hpp"
 #include "core/frontend/Notifications.hpp"
+#include "core/frontend/localization/Localization.hpp"
 #include "core/frontend/widgets/imgui_colors.h"
 #include "game/backend/AnticheatBypass.hpp"
 #include "game/gta/Natives.hpp"
@@ -143,7 +144,7 @@ namespace YimMenu::Submenus
 
 	struct TransactionCategoryHash
 	{
-		const char* m_Name = nullptr;
+		std::string m_Name;
 		std::uint32_t m_Hash;
 	};
 
@@ -383,7 +384,7 @@ namespace YimMenu::Submenus
 		if (
 		    required ?
 		        ImGui::InputText(label.data(), item.m_Name, sizeof(item.m_Name)) :
-		        ImGui::InputTextWithHint(label.data(), "Optional", item.m_Name, sizeof(item.m_Name)))
+		        ImGui::InputTextWithHint(label.data(), "可选", item.m_Name, sizeof(item.m_Name)))
 		{
 			item.m_Hash = Joaat(item.m_Name);
 			if (auto cat_item = Pointers.GetCatalogItem(Pointers.NetCatalog, &item.m_Hash))
@@ -455,7 +456,7 @@ namespace YimMenu::Submenus
 			}
 
 			ImGui::SetNextItemWidth(180.0f);
-			if (ImGui::InputScalar("Quantity", ImGuiDataType_U32, &item.m_Quantity))
+			if (ImGui::InputScalar("数量", ImGuiDataType_U32, &item.m_Quantity))
 			{
 				if (item.m_Quantity == 0)
 					item_to_delete = i; // assume the user wants this item gone
@@ -503,7 +504,7 @@ namespace YimMenu::Submenus
 	std::shared_ptr<Category> BuildTransactionsMenu()
 	{
 		auto menu = std::make_shared<Category>("交易");
-		auto normal = std::make_shared<Group>("Triggerer");
+		auto normal = std::make_shared<Group>("触发器");
 
 		normal->AddItem(std::make_unique<ImGuiItem>([] {
 			if (!NativeInvoker::AreHandlersCached())
@@ -521,19 +522,19 @@ namespace YimMenu::Submenus
 			bool txn_valid{true};
 
 			ImGui::SetNextItemWidth(180.0f);
-			if (ImGui::Combo("类型", reinterpret_cast<int*>(&info.m_Type), "Basket\0Service\0"))
+			if (ImGui::Combo("类型", reinterpret_cast<int*>(&info.m_Type), "购物篮\0服务\0"))
 				OnTransactionTypeChanged(info);
 
 			ImGui::SetNextItemWidth(250.0f);
-			if (ImGui::BeginCombo("分类", info.m_Category.m_Name))
+			if (ImGui::BeginCombo("分类", info.m_Category.m_Name.c_str()))
 			{
 				for (auto& item : NET_SHOP_CATEGORIES)
 				{
 					if ((info.m_Type != TransactionInfo::Type::SERVICE) ^ IsCategoryService(item.second))
 					{
-						if (ImGui::Selectable(item.first, item.second == info.m_Category.m_Hash))
+						if (ImGui::Selectable(Localization::Translate(item.first).c_str(), item.second == info.m_Category.m_Hash))
 						{
-							info.m_Category.m_Name = item.first;
+							info.m_Category.m_Name = Localization::Translate(item.first);
 							info.m_Category.m_Hash = item.second;
 						}
 
@@ -545,15 +546,15 @@ namespace YimMenu::Submenus
 			}
 
 			ImGui::SetNextItemWidth(250.0f);
-			if (ImGui::BeginCombo("Action", info.m_Action.m_Name))
+			if (ImGui::BeginCombo("操作", info.m_Action.m_Name.c_str()))
 			{
 				for (auto& item : NET_SHOP_ACTIONS)
 				{
 					if (info.m_Type != TransactionInfo::Type::SERVICE || IsActionService(item.second))
 					{
-						if (ImGui::Selectable(item.first, item.second == info.m_Action.m_Hash))
+						if (ImGui::Selectable(Localization::Translate(item.first).c_str(), item.second == info.m_Action.m_Hash))
 						{
-							info.m_Action.m_Name = item.first;
+							info.m_Action.m_Name = Localization::Translate(item.first);
 							info.m_Action.m_Hash = item.second;
 						}
 

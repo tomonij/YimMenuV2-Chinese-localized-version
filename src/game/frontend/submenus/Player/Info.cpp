@@ -34,7 +34,7 @@ namespace YimMenu::Submenus
 			if (Players::GetSelected().IsValid())
 			{
 				ImGui::Text("等级：%d（%d RP）", Players::GetSelected().GetRank(), Players::GetSelected().GetRP());
-				ImGui::Text("金钱: %d", Players::GetSelected().GetMoney());
+				ImGui::Text("金钱：%d", Players::GetSelected().GetMoney());
 
 				if (Players::GetSelected().GetPed())
 				{
@@ -58,7 +58,7 @@ namespace YimMenu::Submenus
 
 				std::string ridStr = std::to_string(rid1);
 
-				ImGui::Text("RID:");
+				ImGui::Text("RID：");
 				ImGui::SameLine();
 				if (ImGui::SmallButton(std::to_string(rid1).c_str()))
 				{
