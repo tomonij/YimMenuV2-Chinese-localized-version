@@ -1,4 +1,4 @@
-#include "武器.hpp"
+#include "Weapons.hpp"
 #include "core/backend/FiberPool.hpp"
 #include "core/backend/ScriptMgr.hpp"
 #include "game/backend/Self.hpp"

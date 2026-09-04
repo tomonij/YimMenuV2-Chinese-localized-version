@@ -1,4 +1,4 @@
-#include "设置.hpp"
+#include "Settings.hpp"
 
 #include "core/commands/Commands.hpp"
 #include "core/commands/HotkeySystem.hpp"
