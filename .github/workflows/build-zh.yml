@@ -1,0 +1,82 @@
+name: Build YimMenuV2 (Simplified Chinese)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - enhanced
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Windows x64 Release Build
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Enable long paths
+        shell: pwsh
+        run: git config --system core.longpaths true
+
+      - name: Setup MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: amd64
+
+      - name: Check toolchain
+        shell: pwsh
+        run: |
+          cmake --version
+          ninja --version
+          clang++ --version
+
+      - name: Configure CMake
+        shell: pwsh
+        run: |
+          cmake `
+            -DCMAKE_C_COMPILER=clang `
+            -DCMAKE_CXX_COMPILER=clang++ `
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo `
+            -S . `
+            -B build `
+            -G Ninja
+
+      - name: Build YimMenuV2
+        shell: pwsh
+        run: |
+          cmake --build ./build --config RelWithDebInfo --target YimMenuV2 --parallel
+
+      - name: Verify build output
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "build/YimMenuV2.dll")) {
+            Write-Error "YimMenuV2.dll was not produced."
+            exit 1
+          }
+
+          Get-Item "build/YimMenuV2.dll" |
+            Select-Object FullName, Length, LastWriteTime
+
+      - name: Calculate SHA256
+        shell: pwsh
+        run: |
+          (Get-FileHash "build/YimMenuV2.dll" -Algorithm SHA256).Hash |
+            Out-File -Encoding ascii build/YimMenuV2.dll.sha256
+
+      - name: Upload compiled DLL
+        uses: actions/upload-artifact@v4
+        with:
+          name: YimMenuV2-SC-zh-${{ github.sha }}
+          path: |
+            build/YimMenuV2.dll
+            build/YimMenuV2.pdb
+            build/YimMenuV2.dll.sha256
+          if-no-files-found: error
+          retention-days: 14
