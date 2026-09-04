@@ -1,4 +1,4 @@
-#include "调试.hpp"
+#include "Debug.hpp"
 
 #include "Debug/Misc.hpp"
 #include "Debug/Globals.hpp"
