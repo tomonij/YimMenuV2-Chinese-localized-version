@@ -597,7 +597,7 @@ namespace YimMenu::Submenus
 
 						if (components.size() != 2)
 						{
-							LOGF(WARNING, "Load From Clipboard: line \\"{}\\" is malformed", std::string_view{line.begin(), line.end()});
+							LOGF(WARNING, "Load From Clipboard: line \"{}\" is malformed", std::string_view{line.begin(), line.end()});
 							continue;
 						}
 
