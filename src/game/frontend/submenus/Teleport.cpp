@@ -86,8 +86,7 @@ namespace YimMenu::Submenus
 
 		ImGui::Separator();
 
-		ImGui::Text("双击传送
-按住 Shift 点击删除");
+		ImGui::Text("双击传送\n按住 Shift 点击删除");
 
 		ImGui::Spacing();
 
